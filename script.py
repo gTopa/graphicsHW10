@@ -91,12 +91,19 @@ def run(filename):
     ident(tmp)
     stack = [ [x[:] for x in tmp] ]
     screen = new_screen()
-    tmp = []
     step = 0.1
-
+    x=0
+    
     num_frames, basename=first_pass(commands)
+    print basename
     knob=second_pass(commands, num_frames)
-    for x in range(num_frames):
+    while x<num_frames:
+        print x
+        ident(tmp)
+        stack = [ [x[:] for x in tmp] ]
+        screen = new_screen()
+        tmp = new_matrix()
+        step = 0.1
         for command in commands:
             #print command
             c = command[0]
@@ -159,3 +166,6 @@ def run(filename):
             display(screen)
         elif c == 'save':
             save_extension(screen, args[0])
+
+        save_extension(screen, "anim/"+basename+"%03d"%x+".png")
+        x+=1
