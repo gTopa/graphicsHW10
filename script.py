@@ -27,7 +27,7 @@ def first_pass( commands ):
 
     for command in commands:
         if command[0]=='frames':
-            frames=int(command[1])
+            num_frames=int(command[1])
 
         elif command[0]=="basename":
             basename=command[1]
@@ -35,13 +35,13 @@ def first_pass( commands ):
         elif command[0]=="vary":
             varyC+=1
 
-    if (varyC>0 and frames==0):
+    if (varyC>0 and num_frames==0):
         print "used vary, no frames set"
         return
 
-    if (frames>0 and basename==''):
+    if (num_frames>0 and basename==''):
         basename='default'
-            
+    return num_frames, basename
 
 """======== second_pass( commands ) ==========
 
@@ -65,9 +65,12 @@ def second_pass( commands, num_frames ):
     for command in commands:
         if command[0]=='vary':
             for frame in range(num_frames):
-                if frame in range(int(command[2]),int(command[3])):
-                    knobs[frame][command[1]]=(float(command[5])-float(command[4]))/(float(command[3])-float(command[2])+1)
-
+                if frame in range(int(command[2]),int(command[3])+1):
+                    if(frame==int(command[2])):
+                        knobs[frame][command[1]]=float(command[4])
+                    else:
+                        knobs[frame][command[1]]=knobs[frame-1][command[1]]+((float(command[5])-float(command[4]))/(float(command[3])-float(command[2])))
+    return knobs
 
 def run(filename):
     """
@@ -90,11 +93,15 @@ def run(filename):
     screen = new_screen()
     tmp = []
     step = 0.1
-    for command in commands:
-        print command
-        c = command[0]
-        args = command[1:]
 
+    num_frames, basename=first_pass(commands)
+    knob=second_pass(commands, num_frames)
+    for x in range(num_frames):
+        for command in commands:
+            #print command
+            c = command[0]
+            args = command[1:]
+            
         if c == 'box':
             add_box(tmp,
                     args[0], args[1], args[2],
@@ -116,11 +123,17 @@ def run(filename):
             tmp = []
         elif c == 'move':
             tmp = make_translate(args[0], args[1], args[2])
+            if(len(args)>3):
+                if (args[3] in knob[x]):
+                    scalar_mult(tmp, knob[x][args[3]])
             matrix_mult(stack[-1], tmp)
             stack[-1] = [x[:] for x in tmp]
             tmp = []
         elif c == 'scale':
             tmp = make_scale(args[0], args[1], args[2])
+            if(len(args)>3):
+                if (args[3] in knob[x]):
+                    scalar_mult(tmp, knob[x][args[3]])
             matrix_mult(stack[-1], tmp)
             stack[-1] = [x[:] for x in tmp]
             tmp = []
@@ -132,6 +145,9 @@ def run(filename):
                 tmp = make_rotY(theta)
             else:
                 tmp = make_rotZ(theta)
+            if(len(args)>2):
+                if(args[2] in knob[x]):
+                    scalar_mult(tmp, knob[x][args[2]])
             matrix_mult( stack[-1], tmp )
             stack[-1] = [ x[:] for x in tmp]
             tmp = []
