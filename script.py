@@ -88,84 +88,87 @@ def run(filename):
         print "Parsing failed."
         return
 
-    ident(tmp)
-    stack = [ [x[:] for x in tmp] ]
-    screen = new_screen()
-    step = 0.1
-    x=0
+    i=0
     
     num_frames, basename=first_pass(commands)
     print basename
     knob=second_pass(commands, num_frames)
-    while x<num_frames:
-        print x
+    while i<num_frames:
+        print i
+        tmp = new_matrix()
         ident(tmp)
         stack = [ [x[:] for x in tmp] ]
         screen = new_screen()
-        tmp = new_matrix()
+        tmp = []
         step = 0.1
         for command in commands:
             #print command
             c = command[0]
             args = command[1:]
             
-        if c == 'box':
-            add_box(tmp,
-                    args[0], args[1], args[2],
-                    args[3], args[4], args[5])
-            matrix_mult( stack[-1], tmp )
-            draw_polygons(tmp, screen, color)
-            tmp = []
-        elif c == 'sphere':
-            add_sphere(tmp,
-                       args[0], args[1], args[2], args[3], step)
-            matrix_mult( stack[-1], tmp )
-            draw_polygons(tmp, screen, color)
-            tmp = []
-        elif c == 'torus':
-            add_torus(tmp,
-                      args[0], args[1], args[2], args[3], args[4], step)
-            matrix_mult( stack[-1], tmp )
-            draw_polygons(tmp, screen, color)
-            tmp = []
-        elif c == 'move':
-            tmp = make_translate(args[0], args[1], args[2])
-            if(len(args)>3):
-                if (args[3] in knob[x]):
-                    scalar_mult(tmp, knob[x][args[3]])
-            matrix_mult(stack[-1], tmp)
-            stack[-1] = [x[:] for x in tmp]
-            tmp = []
-        elif c == 'scale':
-            tmp = make_scale(args[0], args[1], args[2])
-            if(len(args)>3):
-                if (args[3] in knob[x]):
-                    scalar_mult(tmp, knob[x][args[3]])
-            matrix_mult(stack[-1], tmp)
-            stack[-1] = [x[:] for x in tmp]
-            tmp = []
-        elif c == 'rotate':
-            theta = args[1] * (math.pi/180)
-            if args[0] == 'x':
-                tmp = make_rotX(theta)
-            elif args[0] == 'y':
-                tmp = make_rotY(theta)
-            else:
-                tmp = make_rotZ(theta)
-            if(len(args)>2):
-                if(args[2] in knob[x]):
-                    scalar_mult(tmp, knob[x][args[2]])
-            matrix_mult( stack[-1], tmp )
-            stack[-1] = [ x[:] for x in tmp]
-            tmp = []
-        elif c == 'push':
-            stack.append([x[:] for x in stack[-1]] )
-        elif c == 'pop':
-            stack.pop()
-        elif c == 'display':
-            display(screen)
-        elif c == 'save':
-            save_extension(screen, args[0])
+            if c == 'box':
+                add_box(tmp,
+                        args[0], args[1], args[2],
+                        args[3], args[4], args[5])
+                matrix_mult( stack[-1], tmp )
+                draw_polygons(tmp, screen, color)
+                tmp = []
+            elif c == 'sphere':
+                add_sphere(tmp,
+                           args[0], args[1], args[2], args[3], step)
+                matrix_mult( stack[-1], tmp )
+                draw_polygons(tmp, screen, color)
+                tmp = []
+            elif c == 'torus':
+                add_torus(tmp,
+                          args[0], args[1], args[2], args[3], args[4], step)
+                matrix_mult( stack[-1], tmp )
+                draw_polygons(tmp, screen, color)
+                tmp = []
+            elif c == 'move':
+                tmp = make_translate(args[0], args[1], args[2])
+                if(len(args)>3):
+                    if (args[3] in knob[i]):
+                        scalar_mult(tmp, knob[i][args[3]])
+                matrix_mult(stack[-1], tmp)
+                stack[-1] = [x[:] for x in tmp]
+                tmp = []
+            elif c == 'scale':
+                tmp = make_scale(args[0], args[1], args[2])
+                if(len(args)>3):
+                    if (args[3] in knob[i]):
+                        scalar_mult(tmp, knob[i][args[3]])
+                matrix_mult(stack[-1], tmp)
+                stack[-1] = [x[:] for x in tmp]
+                tmp = []
+            elif c == 'rotate':
+                theta = args[1] * (math.pi/180)
+                if args[0] == 'x':
+                    tmp = make_rotX(theta)
+                elif args[0] == 'y':
+                    tmp = make_rotY(theta)
+                else:
+                    tmp = make_rotZ(theta)
+                if(len(args)>2):
+                    if(args[2] in knob[i]):
+                        scalar_mult(tmp, knob[i][args[2]])
+                matrix_mult( stack[-1], tmp )
+                stack[-1] = [ x[:] for x in tmp]
+                tmp = []
+            elif c == 'push':
+                stack.append([x[:] for x in stack[-1]] )
+            elif c == 'pop':
+                stack.pop()
+            elif c == 'display':
+                display(screen)
+            elif c == 'save':
+                save_extension(screen, args[0])
 
-        save_extension(screen, "anim/"+basename+"%03d"%x+".png")
-        x+=1
+                
+        if(x==0):
+            save_extension(screen, "anim/"+basename+"000.png")            
+        else:
+            save_extension(screen, "anim/"+basename+("%03d"%i)+".png")
+
+        i+=1
+
