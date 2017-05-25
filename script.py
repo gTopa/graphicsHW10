@@ -126,22 +126,34 @@ def run(filename):
                 draw_polygons(tmp, screen, color)
                 tmp = []
             elif c == 'move':
+                if args[3] != None:
+                    #print "move: " + args[3] + " " + knob[frame][args[3]]
+                    x = args[0]*knob[i][args[3]];
+                    y = args[1]*knob[i][args[3]];
+                    z = args[2]*knob[i][args[3]];
+                    args = [x, y, z]
                 tmp = make_translate(args[0], args[1], args[2])
-                if(len(args)>3):
-                    if (args[3] in knob[i]):
-                        scalar_mult(tmp, knob[i][args[3]])
                 matrix_mult(stack[-1], tmp)
                 stack[-1] = [x[:] for x in tmp]
                 tmp = []
             elif c == 'scale':
+                if args[3] != None:
+                    #print "scale: " + args[3] + " " + str(knob[frame][args[3]])
+                    x = args[0]*knob[i][args[3]];
+                    y = args[1]*knob[i][args[3]];
+                    z = args[2]*knob[i][args[3]];
+                    args = [x, y, z]
                 tmp = make_scale(args[0], args[1], args[2])
-                if(len(args)>3):
-                    if (args[3] in knob[i]):
-                        scalar_mult(tmp, knob[i][args[3]])
                 matrix_mult(stack[-1], tmp)
+                #print tmp;
                 stack[-1] = [x[:] for x in tmp]
+                #print stack[-1]
                 tmp = []
             elif c == 'rotate':
+                if args[2] != None:
+                    #print "rotate: " + args[2] + " " + str(knob[frame][args[2]])
+                    angle = args[1] * knob[i][args[2]];
+                    args = [args[0], angle]
                 theta = args[1] * (math.pi/180)
                 if args[0] == 'x':
                     tmp = make_rotX(theta)
@@ -149,11 +161,9 @@ def run(filename):
                     tmp = make_rotY(theta)
                 else:
                     tmp = make_rotZ(theta)
-                if(len(args)>2):
-                    if(args[2] in knob[i]):
-                        scalar_mult(tmp, knob[i][args[2]])
                 matrix_mult( stack[-1], tmp )
                 stack[-1] = [ x[:] for x in tmp]
+                #print stack[-1];
                 tmp = []
             elif c == 'push':
                 stack.append([x[:] for x in stack[-1]] )

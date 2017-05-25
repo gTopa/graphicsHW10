@@ -19,6 +19,8 @@ def draw_polygons( matrix, screen, color ):
         normal = calculate_normal(matrix, point)[:]
         #print normal
         if normal[2] > 0:
+            points=[matrix[point][0],matrix[point][1],matrix[point+1][0],matrix[point+1][1],matrix[point+2][0],matrix[point+2][1]]
+            scanline(points,screen,[point*13%256,point*13%256,point*13%256])
             draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
                        int(matrix[point+1][0]),
@@ -36,7 +38,36 @@ def draw_polygons( matrix, screen, color ):
                        screen, color)    
         point+= 3
 
+def scanline(points, screen, color):
+    top=[points[0],points[1]]
+    mid=[points[2],points[3]]
+    bot=[points[4],points[5]]
+    if(mid[1]<bot[1]):
+        temp=mid
+        mid=bot
+        bot=temp
+    if(top[1]<bot[1]):
+        temp=top
+        top=bot
+        bot=temp
+    if(top[1]<mid[1]):
+        temp=top
+        top=mid
+        mid=temp
 
+    y=bot[1]
+    x0=bot[0]
+    x1=bot[0]
+    dx0=(top[0]-bot[0])/(top[1]-bot[1])
+    dx1=(mid[0]-bot[0])/(mid[1]-bot[1]) if (mid[1]-bot[1])!=0 else 0
+    while (y<=top[1]):
+        draw_line(int(x0),int(y),int(x1),int(y),screen,color)
+        y+=1
+        x0+=dx0
+        if (int(x1)==int(mid[0])):
+            dx1=(top[0]-mid[0])/(top[1]-mid[1]) if (top[1]-mid[1]) else 0
+        x1+=dx1
+    
 def add_box( polygons, x, y, z, width, height, depth ):
     x1 = x + width
     y1 = y - height
