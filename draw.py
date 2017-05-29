@@ -55,19 +55,24 @@ def scanline(points, screen, color):
         top=mid
         mid=temp
 
-    y=bot[1]
     x0=bot[0]
     x1=bot[0]
     dx0=(top[0]-bot[0])/(top[1]-bot[1])
     dx1=(mid[0]-bot[0])/(mid[1]-bot[1]) if (mid[1]-bot[1])!=0 else 0
-    while (y<=top[1]):
+
+    for y in range(int(bot[1]),int(mid[1])):
         draw_line(int(x0),int(y),int(x1),int(y),screen,color)
-        y+=1
         x0+=dx0
-        if (int(x1)==int(mid[0])):
-            dx1=(top[0]-mid[0])/(top[1]-mid[1]) if (top[1]-mid[1]) else 0
         x1+=dx1
-    
+
+    dx1=(top[0]-mid[0])/(top[1]-mid[1]) if (top[1]-mid[1])!=0 else 0
+    x1=mid[0]
+     
+    for y in range(int(mid[1]),int(top[1])):
+        draw_line(int(x0),int(y),int(x1),int(y),screen,color)
+        x0+=dx0
+        x1+=dx1
+        
 def add_box( polygons, x, y, z, width, height, depth ):
     x1 = x + width
     y1 = y - height
