@@ -20,6 +20,16 @@ def new_screen( width = XRES, height = YRES ):
             screen[y].append( DEFAULT_COLOR[:] )
     return screen
 
+def new_zbuff( width = XRES, height = YRES ):
+    zbuff=[]
+    for y in range(height):
+        row=[]
+        zbuff.append(row)
+        for x in range(width):
+            screen[y].append(-sys.maxsize - 1)
+    return zbuff
+            
+    
 def plot( screen, color, x, y ):
     newy = YRES - 1 - y
     if ( x >= 0 and x < XRES and newy >= 0 and newy < YRES ):

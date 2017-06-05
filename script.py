@@ -99,6 +99,7 @@ def run(filename):
         ident(tmp)
         stack = [ [x[:] for x in tmp] ]
         screen = new_screen()
+        zbuff = new_zbuff()
         tmp = []
         step = 0.1
         for command in commands:
