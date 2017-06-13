@@ -1,5 +1,6 @@
 from subprocess import Popen, PIPE
 from os import remove, execlp, fork
+import sys
 
 #constants
 XRES = 500
@@ -26,14 +27,16 @@ def new_zbuff( width = XRES, height = YRES ):
         row=[]
         zbuff.append(row)
         for x in range(width):
-            screen[y].append(-sys.maxsize - 1)
+            zbuff[y].append(-sys.maxsize - 1)
     return zbuff
             
     
-def plot( screen, zbuff, color, x, y ):
+def plot( screen, zbuff, color, x, y, z ):
     newy = YRES - 1 - y
-    if ( x >= 0 and x < XRES and newy >= 0 and newy < YRES ):
+    if ( x >= 0 and x < XRES and newy >= 0 and newy < YRES and z>zbuff[newy][x]):
         screen[newy][x] = color[:]
+        zbuff[newy][x] = z
+        
 
 def clear_screen( screen ):
     for y in range( len(screen) ):

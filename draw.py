@@ -27,22 +27,24 @@ def scanline(points, screen, zbuffer, color):
     x1=bot[0]
     dx0=(top[0]-bot[0])/(top[1]-bot[1])
     dx1=(mid[0]-bot[0])/(mid[1]-bot[1]) if (mid[1]-bot[1])!=0 else 0
-    dz0=(top[2]-bot[2])/(top[1]-bot[1])
+    dz0=(top[2]-bot[2])/(top[1]-bot[1]) if (mid[1]-bot[1])!=0 else 0
     dz1=(mid[2]-bot[2])/(mid[1]-bot[1]) if (mid[1]-bot[1])!=0 else 0
 
     for y in range(int(bot[1]),int(mid[1])):
-        draw_line(int(x0),int(y),int(x1),int(y),screen,color)
+        draw_line(int(x0),int(y),int(z0),int(x1),int(y),int(z1),screen,zbuffer,color)
         x0+=dx0
         x1+=dx1
         z0+=dz0
         z1+=dz1
         
-    dx1=(top[2]-mid[2])/(top[1]-mid[1]) if (top[1]-mid[1])!=0 else 0
+    dx1=(top[0]-mid[0])/(top[1]-mid[1]) if (top[1]-mid[1])!=0 else 0
+    dz1=(top[2]-mid[2])/(top[1]-mid[1]) if (top[1]-mid[1])!=0 else 0
+
     x1=mid[0]
     z1=mid[2]
      
     for y in range(int(mid[1]),int(top[1])):
-        draw_line(int(x0),int(y),int(x1),int(y),screen,color)
+        draw_line(int(x0),int(y),int(z0),int(x1),int(y),int(z1),screen,zbuffer,color)
         x0+=dx0
         x1+=dx1
         z0+=dz0
@@ -64,8 +66,9 @@ def draw_polygons( matrix, screen, zbuffer, color ):
         normal = calculate_normal(matrix, point)[:]
         #print normal
         if normal[2] > 0:
-            scanline_convert(matrix, point, screen, zbuffer)            
-            draw_line( int(matrix[point][0]),
+            points=[matrix[point][0],matrix[point][1],matrix[point][2],matrix[point+1][0],matrix[point+1][1],matrix[point+1][2],matrix[point+2][0],matrix[point+2][1],matrix[point+2][2]]
+            scanline(points, screen, zbuffer, [point*5%255,point*13%255,point*7%255])            
+            '''draw_line( int(matrix[point][0]),
                        int(matrix[point][1]),
                        matrix[point][2],
                        int(matrix[point+1][0]),
@@ -85,7 +88,7 @@ def draw_polygons( matrix, screen, zbuffer, color ):
                        int(matrix[point+2][0]),
                        int(matrix[point+2][1]),
                        matrix[point+2][2],
-                       screen, zbuffer, color)    
+                       screen, zbuffer, color)    '''
         point+= 3
 
 
@@ -363,6 +366,7 @@ def draw_line( x0, y0, z0, x1, y1, z1, screen, zbuffer, color ):
             x+= dx_east
             y+= dy_east
             d+= d_east
+        z+=dz
         loop_start+= 1
 
     plot( screen, zbuffer, color, x, y, z )

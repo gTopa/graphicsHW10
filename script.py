@@ -112,19 +112,19 @@ def run(filename):
                         args[0], args[1], args[2],
                         args[3], args[4], args[5])
                 matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, color)
+                draw_polygons(tmp, screen, zbuff, color)
                 tmp = []
             elif c == 'sphere':
                 add_sphere(tmp,
                            args[0], args[1], args[2], args[3], step)
                 matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, color)
+                draw_polygons(tmp, screen, zbuff, color)
                 tmp = []
             elif c == 'torus':
                 add_torus(tmp,
                           args[0], args[1], args[2], args[3], args[4], step)
                 matrix_mult( stack[-1], tmp )
-                draw_polygons(tmp, screen, color)
+                draw_polygons(tmp, screen, zbuff, color)
                 tmp = []
             elif c == 'move':
                 if args[3] != None:
